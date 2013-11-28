@@ -1,76 +1,61 @@
-/*
- * Server.java
- *
- * Created on 21 de marzo de 2008, 12:02 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
+
 
 package Servidor;
 
-/**
- *
- * @author Administrador
- */
 import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import javax.swing.*;
 
-class Servidor extends JFrame
+class Servidor //extends JFrame
 {
-   JTextArea txaMostrar;
+   JTextArea txalog;
    public Servidor()
    {
-      super("Consola servidor");
-      txaMostrar=new JTextArea();      
-    
-      this.setContentPane(new JScrollPane(txaMostrar));
-      setSize(350,350);
-      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      setVisible(true);      
+ 
       
    }
-   public void mostrar(String msg)
+   public void log(String msg)
    {
-      txaMostrar.append(msg+"\n");
+      
+	   System.out.println(msg + "\n");
    }
-   public void runServer()
+   public void iniciar()
    {
-      ServerSocket serv=null;//para comunicacion
-      ServerSocket serv2=null;//para enviar mensajes
+      ServerSocket socketServidorNet=null;
+      ServerSocket socketServerMensajes=null;
       boolean listening=true;
       try{
-         serv=new ServerSocket(8081);
-         serv2=new ServerSocket(8082);
-         mostrar(".::Servidor activo :");
+    	  socketServidorNet=new ServerSocket(8081);
+    	  socketServerMensajes=new ServerSocket(8082);
+         log("Iniciando servidor.............:");
          while(listening)
          {
-            Socket sock=null,sock2=null;
+            Socket socketNet=null;
+            Socket socketMensaje=null;
             try {
-               mostrar("Esperando Usuarios");
-               sock=serv.accept();
-               sock2=serv2.accept();
+               log(".........esperando conexiones.......");
+               socketNet=socketServidorNet.accept();
+               socketMensaje=socketServerMensajes.accept();
             } catch (IOException e)
             {
-               mostrar("Accept failed: " + serv + ", " + e.getMessage());
+               log("socket accept  " + socketServidorNet + ", " + e.getMessage());
                continue;
             }
-            threadServidor user=new threadServidor(sock,sock2,this);            
-	    user.start();
+            thread usuario_administrado=new thread(socketNet,socketMensaje,this);            
+	    usuario_administrado.start();
          }
          
       }catch(IOException e){
-         mostrar("error :"+e);
+         log("error :"+e);
       }
    }
    
    public static void main(String abc[]) throws IOException
    {                
      Servidor ser= new Servidor();
-     ser.runServer();
+     ser.iniciar();
    }
 }
 

@@ -1,11 +1,4 @@
-/*
- * Cliente.java
- *
- * Created on 21 de marzo de 2008, 12:11 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
+
 
 package Cliente;
 
@@ -16,43 +9,42 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author Administrador
- */
+
 public class Cliente
 {
-   public static String IP_SERVER;
-   VentCliente vent;
+   public static String IP_SERVER = "192.168.1.68";
+   Interface interfaceCliente;
+   Socket socketNet = null;//para la socketNet
+   Socket socketMensaje = null;//para recivir msg
    DataInputStream entrada = null;
    DataOutputStream salida = null;
    DataInputStream entrada2 = null;
-   Socket comunication = null;//para la comunicacion
-   Socket comunication2 = null;//para recivir msg
+   
    
    String nomCliente;
    /** Creates a new instance of Cliente */
-   public Cliente(VentCliente vent) throws IOException
+   public Cliente(Interface interfaceCliente) throws IOException
    {      
-      this.vent=vent;
+	   
+      this.interfaceCliente=interfaceCliente;
    }
    
    public void conexion() throws IOException 
    {
       try {
-         comunication = new Socket(Cliente.IP_SERVER, 8081);
-         comunication2 = new Socket(Cliente.IP_SERVER, 8082);
-         entrada = new DataInputStream(comunication.getInputStream());
-         salida = new DataOutputStream(comunication.getOutputStream());
-         entrada2 = new DataInputStream(comunication2.getInputStream());
-         nomCliente = JOptionPane.showInputDialog("Introducir Nick :");
-         vent.setNombreUser(nomCliente);         
+         socketNet = new Socket(Cliente.IP_SERVER, 8081);
+         socketMensaje = new Socket(Cliente.IP_SERVER, 8082);
+         entrada = new DataInputStream(socketNet.getInputStream());
+         salida = new DataOutputStream(socketNet.getOutputStream());
+         entrada2 = new DataInputStream(socketMensaje.getInputStream());
+         nomCliente = JOptionPane.showInputDialog("Nombre de usuario :");
+         interfaceCliente.setNombreUser(nomCliente);         
          salida.writeUTF(nomCliente);
       } catch (IOException e) {
-         System.out.println("\tEl servidor no esta levantado");
-         System.out.println("\t=============================");
+         System.out.println("\tEl servidor no esta iniciado ");
+         
       }
-      new threadCliente(entrada2, vent).start();
+      new thread(entrada2, interfaceCliente).start();
    }
    public String getNombre()
    {
