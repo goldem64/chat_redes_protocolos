@@ -192,5 +192,7 @@ public class Interface extends JFrame implements ActionListener {
      public static void main(String args[]) throws IOException {
              
              Interface cliente = new Interface();
+             Cliente.IP_SERVER = JOptionPane.showInputDialog("IP SERVIDOR :","localhost");
+             
      }
 }
